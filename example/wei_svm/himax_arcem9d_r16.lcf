@@ -1,0 +1,38 @@
+MEMORY {
+        ICCM0   : ORIGIN = 0x00000000, LENGTH = 0x00010000
+    #   CCMWRAP0: ORIGIN = 0x00010000, LENGTH = 0x0fff0000
+        ICCM1   : ORIGIN = 0x10000000, LENGTH = 0x00080000
+    #   CCMWRAP1: ORIGIN = 0x10080000, LENGTH = 0x0ff80000
+    #   SYSTEM0 : ORIGIN = 0x20000000, LENGTH = 0x60000000
+        DCCM    : ORIGIN = 0x80000000, LENGTH = 0x00080000
+    #   CCMWRAP2: ORIGIN = 0x80080000, LENGTH = 0x0ff80000
+        XCCM    : ORIGIN = 0x90000000, LENGTH = 0x00008000
+    #   CCMWRAP3: ORIGIN = 0x90008000, LENGTH = 0x0fff8000
+        YCCM    : ORIGIN = 0xa0000000, LENGTH = 0x00008000
+    #   CCMWRAP4: ORIGIN = 0xa0008000, LENGTH = 0x0fff8000
+    #   SYSTEM1 : ORIGIN = 0xb0000000, LENGTH = 0x50000000
+    }
+SECTIONS {
+    GROUP: {
+	.vectors (TEXT) SIZE(DEFINED _IVTSIZE?_IVTSIZE:684): {} = FILL(0xa5a5a5a5,4)
+	.text? : { *('.text$crt*') }
+        * (TEXT): {}
+    	* (LIT): {}
+	} > ICCM1
+    GROUP: {
+	/* _SDA_BASE_ computed implicitly */
+        .sdata?: {}
+        .sbss?: {}
+        * (DATA): {}
+        * (BSS): {}
+       .stack ALIGN(4) SIZE(DEFINED _STACKSIZE?_STACKSIZE:32768): {}
+       .heap? ALIGN(4) SIZE(DEFINED _HEAPSIZE?_HEAPSIZE:0): {}
+	} > DCCM
+    GROUP: {
+        .Xdata? : {}
+        } > XCCM
+    GROUP: {
+        .Ydata? : {}
+        } > YCCM
+    
+    }
